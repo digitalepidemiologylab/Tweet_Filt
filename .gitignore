@@ -99,3 +99,7 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Data too big, No need for dump
+/Data/*
+/Dump/*
