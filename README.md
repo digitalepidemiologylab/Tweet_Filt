@@ -10,6 +10,7 @@ The different attributes are rather self explanatory:
 * condition: will be the condition on which the filter will be based (see below for the nomenclature of this string)
 * key: initialized for "text", changing this will allow for the filter to look at other information in the tweet object (e.g. "user", "coordinates"...)
 * strip: initialized for True, this will allow the filter to remove the usernames, urls and hashtags from the analyzed field. By setting this attribute to false the analyzed fields will be left as is.
+
 !Add a Dump folder to make the code run!
 
 ### Prerequisites
