@@ -102,4 +102,3 @@ ENV/
 
 # Data too big, No need for dump
 /Data/*
-/Dump/*
