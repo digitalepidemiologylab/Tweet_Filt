@@ -18,7 +18,7 @@ def run_all(path, condition, key="text", strip=True):
     """This will allow to run all the directories from a path"""
     for root, dirs, files in os.walk(path):
         for i in dirs:
-            fanout_gzworker(path + os.path.join(root, i), condition, key, strip)
+            fanout_gzworker(os.path.join(root, i), condition, key, strip)
 
 ##############################################################################
 ###################### Fanout Function #######################################
@@ -40,7 +40,7 @@ def fanout_gzworker(path, condition, key, strip):
                                              repeat(key), repeat(strip)),
                                chunksize=1))
     pool.close()
-    with open('../Dump/' + os.path.basename(path) + '.txt', 'w') as _file:
+    with open('Dump/' + os.path.basename(path) + '.txt', 'w') as _file:
         for i in big_buffer:
             for j in i:
                 json.dump(j, _file)
