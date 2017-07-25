@@ -1,4 +1,4 @@
-from tweet_filt import strip_all_entities, strip_links
+import tweet_filt as tf
 
 def test_strip():
-    assert strip_all_entities(strip_links("This is a @test")) == "This is a"
+    assert tf.strip_all_entities(tf.strip_links("This is a @test")) == "This is a"
