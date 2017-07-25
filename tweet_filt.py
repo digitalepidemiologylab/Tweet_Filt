@@ -14,17 +14,17 @@ import multiprocessing as mp
 ############### Run through all folders ######################################
 ##############################################################################
 
-def run_all(path, condition, key="text", strip=True):
+def run_all(path, condition, key="text", strip=True, key_out="None"):
     """This will allow to run all the directories from a path"""
     for root, dirs, files in os.walk(path):
         for i in dirs:
-            fanout_gzworker(os.path.join(root, i), condition, key, strip)
+            fanout_gzworker(os.path.join(root, i), condition, key, strip, key_out)
 
 ##############################################################################
 ###################### Fanout Function #######################################
 ##############################################################################
 
-def fanout_gzworker(path, condition, key, strip):
+def fanout_gzworker(path, condition, key="text", strip=True, key_out="None"):
     """Create pool to extract .gz giles
     and create a file where all the filtered tweets will be in JSON format,
     separated by a newline"""
@@ -40,17 +40,13 @@ def fanout_gzworker(path, condition, key, strip):
                                              repeat(key), repeat(strip)),
                                chunksize=1))
     pool.close()
-    with open('Dump/' + os.path.basename(path) + '.txt', 'w') as _file:
-        for i in big_buffer:
-            for j in i:
-                json.dump(j, _file)
-                _file.write('\n')
+    saveInfo(big_buffer, 'Dump/' + os.path.basename(path) + '.txt', key_out)
 
 ##############################################################################
 ###################### Worker Function #######################################
 ##############################################################################
 
-def gzworker(fullpath, condition, key, strip):
+def gzworker(fullpath, condition, key="text", strip="True"):
     """Worker opens one .gz file"""
     print('Opening {}'.format(fullpath))
     buffer = []
@@ -70,7 +66,7 @@ def gzworker(fullpath, condition, key, strip):
 ###################### Filter Function #######################################
 ##############################################################################
 
-def tweet_filter(tweet_obj, condition, key, strip):
+def tweet_filter(tweet_obj, condition, key="text", strip="True"):
     """Will return the tweet object if the conditions are met (in the text only)"""
 
     if key in tweet_obj:
@@ -115,8 +111,30 @@ def strip_all_entities(text):
     return ' '.join(words)
 
 ##############################################################################
+############### Function to save whatever we want from the tweet #############
+##############################################################################
+
+#TODO Function that will save whatever we want from the tweet
+def saveInfo(big_buffer, path="Dump/save.txt", key_out="None"):
+    """Will save the selected output key in the selected path in the selected
+    type output"""
+    if key_out=="None":
+        with open(path, 'w') as _file:
+            for i in big_buffer:
+                for j in i:
+                    json.dump(j, _file)
+                    _file.write('\n')
+    else:
+        with open(path, 'w') as _file:
+            for i in big_buffer:
+                for j in i:
+                    json.dump(j[key_out], _file)
+                    _file.write('\n')
+
+##############################################################################
 ###################### Tokenizer #############################################
 ##############################################################################
+
 # Regular expression matching a token (group 1) or an error (group 2).
 _TOKEN_RE = re.compile(r'\s*(?:([()*]|\w+\b)|(\S))')
 
