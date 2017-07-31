@@ -8,23 +8,28 @@ import json
 import re
 import string
 import sys
+from pandas.io.json import json_normalize
+import pandas
 import multiprocessing as mp
 
 ##############################################################################
 ############### Run through all folders ######################################
 ##############################################################################
 
-def run_all(path, condition, key="text", strip=True, key_out="None"):
+def run_all(path, condition, key="text", strip=True, key_out="None",
+            output_type="csv"):
     """This will allow to run all the directories from a path"""
     for root, dirs, files in os.walk(path):
         for i in dirs:
-            fanout_gzworker(os.path.join(root, i), condition, key, strip, key_out)
+            fanout_gzworker(os.path.join(root, i), condition, key, strip,
+                            key_out, output_type)
 
 ##############################################################################
 ###################### Fanout Function #######################################
 ##############################################################################
 
-def fanout_gzworker(path, condition, key="text", strip=True, key_out="None"):
+def fanout_gzworker(path, condition, key="text", strip=True,
+                    key_out="None", output_type="csv"):
     """Create pool to extract .gz giles
     and create a file where all the filtered tweets will be in JSON format,
     separated by a newline"""
@@ -40,7 +45,8 @@ def fanout_gzworker(path, condition, key="text", strip=True, key_out="None"):
                                              repeat(key), repeat(strip)),
                                chunksize=1))
     pool.close()
-    saveInfo(big_buffer, 'Dump/' + os.path.basename(path) + '.txt', key_out)
+    saveInfo(big_buffer, 'Dump/' + os.path.basename(path) + "." + output_type,
+             key_out, output_type)
 
 ##############################################################################
 ###################### Worker Function #######################################
@@ -114,10 +120,13 @@ def strip_all_entities(text):
 ############### Function to save whatever we want from the tweet #############
 ##############################################################################
 
-#TODO Function that will save whatever we want from the tweet
-def saveInfo(big_buffer, path="Dump/save.txt", key_out="None"):
+def saveInfo(big_buffer, path="Dump/save.txt",  key_out="None",
+             output_type="csv"):
     """Will save the selected output key in the selected path in the selected
     type output"""
+    if output_type == "csv":
+        saveInfoCSV(big_buffer, path)
+        return None
     if key_out=="None":
         with open(path, 'w') as _file:
             for i in big_buffer:
@@ -130,6 +139,16 @@ def saveInfo(big_buffer, path="Dump/save.txt", key_out="None"):
                 for j in i:
                     json.dump(j[key_out], _file)
                     _file.write('\n')
+
+
+##############################################################################
+############### Save the info in a .csv file #################################
+##############################################################################
+
+def saveInfoCSV(big_buffer, path="Dump/save.csv"):
+    """Will save the tweet object in the selected path in the csv format"""
+    for i in big_buffer:
+        json_normalize(i).to_csv(path)
 
 ##############################################################################
 ###################### Tokenizer #############################################
