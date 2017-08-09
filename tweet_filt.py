@@ -21,8 +21,10 @@ def run_all(path, condition, key="text", strip=True, key_out=None,
     """This will allow to run all the directories from a path"""
     for root, dirs, files in os.walk(path):
         for i in dirs:
+            print('Starting {}'.format(i))
             fanout_gzworker(os.path.join(root, i), condition, key, strip,
                             key_out, output_type)
+            print('Stopping {}'.format(i))
 
 ##############################################################################
 ###################### Fanout Function #######################################
@@ -54,7 +56,7 @@ def fanout_gzworker(path, condition, key="text", strip=True,
 
 def gzworker(fullpath, condition, key="text", strip="True"):
     """Worker opens one .gz file"""
-    print('Opening {}'.format(fullpath))
+    # print('Opening {}'.format(fullpath))
     buffer = []
     with gzip.open(fullpath, 'rb') as infile:
         decoded = io.TextIOWrapper(infile, encoding='utf8')
@@ -65,7 +67,7 @@ def gzworker(fullpath, condition, key="text", strip="True"):
                                       key, strip)
                 if result:
                     buffer.append(result)
-    print('Closing {}'.format(fullpath))
+    # print('Closing {}'.format(fullpath))
     return buffer
 
 ##############################################################################
@@ -155,7 +157,7 @@ def saveInfoCSV(big_buffer, path="Dump/save.csv"):
 ##############################################################################
 
 # Regular expression matching a token (group 1) or an error (group 2).
-_TOKEN_RE = re.compile(r'\s*(?:([()*]|\w+\b)|(\S))')
+_TOKEN_RE = re.compile(r'\s*(?:([()*_$-]|\w+\b)|(\S))')
 
 # Token representing the end of the input.
 TOKEN_END = '<end of input>'
@@ -220,18 +222,18 @@ def parse_condition(tokens):
                 return tree
             else:
                 error("')'")
-        if match('"'):
+        if match('_'):
             tree = binop()
-            if match('"'):
+            if match('_'):
                 return tree
             else:
-                error("'\"'")
+                error("'_'")
         elif match('$'):
             tree = binop()
             if match('$'):
                 return CaseSensitive(tree)
             else:
-                error("'}'")
+                error("'$'")
         # elif match('*'):
         #     tree = binop()
         #     if match('*'):
