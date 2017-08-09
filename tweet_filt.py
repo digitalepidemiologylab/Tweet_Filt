@@ -30,7 +30,7 @@ def ensure_output_paths_exist(conditions):
         pass
 
     #Ensure respective directories for conditions exist
-    for _idx,_ in conditions:
+    for _idx,_ in enumerate(conditions):
         try:
             os.mkdir(OUTPUT_DIRECTORY+"/c_"+str(_idx))
         except:

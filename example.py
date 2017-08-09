@@ -1,4 +1,4 @@
-from tweet_filt import run_all, fanout_gzworker
+from tweet_filt import run_all
 # import time
 
 condition1 = "(vaccine OR vaccinat) AND ((((((((((vaccine OR vaccinat) OR immunise) OR immunisation) OR jab) OR shot) OR shots) OR booster) OR boosters) AND (((((((((((((((((((((((((((((((((((((((((((((((((((((injection OR harm) OR danger) OR toxic) OR safe) OR safety) OR unsafe) OR unnecessary) OR ineffective) OR doubt) OR hesitant) OR hesitancy) OR concern) OR die) OR deaths) OR paralyse) OR paralysed) OR sick) OR infertile) OR fertility) OR injured) OR injuries) OR (side AND effects)) OR autism) OR autistic) OR link) OR proof) OR controversy) OR controversies) OR myth) OR hoax) OR scam) OR truth) OR lie) OR child) OR children) OR baby) OR babies) OR kid) OR kids) OR school) OR schools) OR consent) OR boycott) OR (drug AND companies)) OR (pharmaceutical AND companies)) OR (big AND pharma)) OR pfizer) OR (boko AND haram)) OR government) OR $WHO$) OR ((international AND health) AND agencies)) OR $NGO$) OR $NHS$)) OR ((((((((((meningitis) OR (yellow AND fever)) OR (herd"
@@ -9,6 +9,3 @@ condition2 = condition2 + " AND immunity)) OR $MenAfriVac$) OR (anti AND vaxxers
 # tic = time.time()
 run_all("/mount/SDD/testbed/", [condition1, condition2], "text", True, None, "txt")
 # run_all("Sample/", condition, "text", True, None, "txt", condition2)
-# toc = time.time()
-# print(toc - tic)
-# fanout_gzworker("Sample/20140417/", "(monkey OR banana)", "text", True)
