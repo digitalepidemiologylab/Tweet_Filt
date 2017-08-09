@@ -13,6 +13,17 @@ The different attributes are rather self explanatory:
 
 !Add a Dump folder to make the code run!
 
+### Condition nomenclature
+
+Will be a string that will be used by the filter to find the specific tweets. Will be case insensitive by default and the different condition will be implemented using this nomenclature:
+* (): will group the tokens inside
+* {}: case sensitive
+* AND: and
+* OR: or
+
+Example text: My horse is not a dog!
+* condition: ((cat OR dog) AND {horse}) will be ((False or True) and True) --> True
+
 ### Prerequisites
 
 Most of the modules used in this project are native but if the machine does not find it, simply install it using pip (pip install <module that is missing>)

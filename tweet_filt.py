@@ -183,6 +183,9 @@ BinOp = namedtuple('BinOp', 'left op right')
 # Ignore case when matching against body.
 IgnoreCase = namedtuple('IgnoreCase', 'body')
 
+# Sensitive case when matching againstbody.
+CaseSensitive = namedtuple('CaseSensitive', 'body')
+
 def parse_condition(tokens):
     """Parse a condition given by an iterator of tokens, and return a
     parse tree.
@@ -217,12 +220,24 @@ def parse_condition(tokens):
                 return tree
             else:
                 error("')'")
-        elif match('*'):
+        if match('"'):
             tree = binop()
-            if match('*'):
-                return IgnoreCase(tree)
+            if match('"'):
+                return tree
             else:
-                error("'*'")
+                error("'"'")
+        elif match('{'):
+            tree = binop()
+            if match('}'):
+                return CaseSensitive(tree)
+            else:
+                error("'}'")
+        # elif match('*'):
+        #     tree = binop()
+        #     if match('*'):
+        #         return IgnoreCase(tree)
+        #     else:
+        #         error("'*'")
         elif token in (')', 'AND', 'OR'):
             error("term")
         else:
@@ -264,7 +279,7 @@ def evaluate_condition(text, tree):
 
     """
     if isinstance(tree, str):
-        return bool(re.search(tree, text))
+        return bool(re.search(tree, text, re.IGNORECASE))
         # search for tree in text, ignoring case if ignorecase=True
     elif isinstance(tree, BinOp):
         left = evaluate_condition(text, tree.left)
@@ -277,6 +292,8 @@ def evaluate_condition(text, tree):
     elif isinstance(tree, IgnoreCase):
         return bool(re.search(tree.body, text, re.IGNORECASE))
         # evaluate tree.body, passing ignorecase=True
+    elif isinstance(tree, CaseSensitive):
+        return bool(re.search(tree.body, text))
     else:
         raise SyntaxError("Something went wrong bra")
         # raise an error
