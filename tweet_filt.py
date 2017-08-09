@@ -54,7 +54,7 @@ def run_all(path, conditions, key="text", strip=True, key_out=None,
     # If NUM_OF_PROCESSES is False, use mp.cpu_count
     pool = mp.Pool(NUM_OF_PROCESSES or mp.cpu_count())
 
-    pool.starmap(gzworker, zip(file_paths, repeat(condition), repeat(key), repeat(strip)), chunksize=1)
+    pool.starmap(gzworker, zip(file_paths, repeat(conditions), repeat(key), repeat(strip)), chunksize=1)
 
     pool.close()
 
