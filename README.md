@@ -17,12 +17,12 @@ The different attributes are rather self explanatory:
 
 Will be a string that will be used by the filter to find the specific tweets. Will be case insensitive by default and the different condition will be implemented using this nomenclature:
 * (): will group the tokens inside
-* {}: case sensitive
+* $$: case sensitive
 * AND: and
 * OR: or
 
 Example text: My horse is not a dog!
-* condition: ((cat OR dog) AND {horse}) will be ((False or True) and True) --> True
+* condition: ((cat OR dog) AND $horse$) will be ((False or True) and True) --> True
 
 ### Prerequisites
 

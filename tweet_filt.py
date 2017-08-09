@@ -226,9 +226,9 @@ def parse_condition(tokens):
                 return tree
             else:
                 error("'"'")
-        elif match('{'):
+        elif match('$'):
             tree = binop()
-            if match('}'):
+            if match('$'):
                 return CaseSensitive(tree)
             else:
                 error("'}'")
