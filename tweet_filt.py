@@ -16,8 +16,8 @@ import multiprocessing as mp
 ############### Run through all folders ######################################
 ##############################################################################
 
-def run_all(path, condition, key="text", strip=True, key_out="None",
-            output_type="csv"):
+def run_all(path, condition, key="text", strip=True, key_out=None,
+            output_type="txt"):
     """This will allow to run all the directories from a path"""
     for root, dirs, files in os.walk(path):
         for i in dirs:
@@ -29,7 +29,7 @@ def run_all(path, condition, key="text", strip=True, key_out="None",
 ##############################################################################
 
 def fanout_gzworker(path, condition, key="text", strip=True,
-                    key_out="None", output_type="csv"):
+                    key_out=None, output_type="csv"):
     """Create pool to extract .gz giles
     and create a file where all the filtered tweets will be in JSON format,
     separated by a newline"""
@@ -120,14 +120,14 @@ def strip_all_entities(text):
 ############### Function to save whatever we want from the tweet #############
 ##############################################################################
 
-def saveInfo(big_buffer, path="Dump/save.txt",  key_out="None",
+def saveInfo(big_buffer, path="Dump/save.txt",  key_out=None,
              output_type="csv"):
     """Will save the selected output key in the selected path in the selected
     type output"""
     if output_type == "csv":
         saveInfoCSV(big_buffer, path)
         return None
-    if key_out=="None":
+    if key_out==None:
         with open(path, 'w') as _file:
             for i in big_buffer:
                 for j in i:
@@ -225,7 +225,7 @@ def parse_condition(tokens):
             if match('"'):
                 return tree
             else:
-                error("'"'")
+                error("'\"'")
         elif match('$'):
             tree = binop()
             if match('$'):
