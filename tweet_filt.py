@@ -17,13 +17,13 @@ import multiprocessing as mp
 ##############################################################################
 
 def run_all(path, condition, key="text", strip=True, key_out=None,
-            output_type="txt"):
+            output_type="txt", condition2=None):
     """This will allow to run all the directories from a path"""
     for root, dirs, files in os.walk(path):
         for i in dirs:
             print('Starting {}'.format(i))
             fanout_gzworker(os.path.join(root, i), condition, key, strip,
-                            key_out, output_type)
+                            key_out, output_type, condition2)
             print('Stopping {}'.format(i))
 
 ##############################################################################
@@ -31,7 +31,7 @@ def run_all(path, condition, key="text", strip=True, key_out=None,
 ##############################################################################
 
 def fanout_gzworker(path, condition, key="text", strip=True,
-                    key_out=None, output_type="csv"):
+                    key_out=None, output_type="csv", condition2=None):
     """Create pool to extract .gz giles
     and create a file where all the filtered tweets will be in JSON format,
     separated by a newline"""
@@ -42,22 +42,36 @@ def fanout_gzworker(path, condition, key="text", strip=True,
             if i.endswith(".gz"):
                 my_files.append(os.path.join(root, i))
 
-    pool = mp.Pool(min(mp.cpu_count(), len(my_files)))
-    big_buffer = (pool.starmap(gzworker, zip(my_files, repeat(condition),
-                                             repeat(key), repeat(strip)),
-                               chunksize=1))
-    pool.close()
-    saveInfo(big_buffer, 'Dump/' + os.path.basename(path) + "." + output_type,
-             key_out, output_type)
+    if condition2:
+        pool = mp.Pool(min(mp.cpu_count(), len(my_files)))
+        big_buffer = (pool.starmap(gzworker, zip(my_files, repeat(condition),
+                                                 repeat(key), repeat(strip),
+                                                 repeat(condition2)),
+                                   chunksize=1))
+        pool.close()
+        saveInfo1(big_buffer, 'Dump/c1_' + os.path.basename(path) + "." + output_type,
+                 key_out, output_type)
+        saveInfo2(big_buffer, 'Dump/c2_' + os.path.basename(path) + "." + output_type,
+                 key_out, output_type)
+    else:
+        pool = mp.Pool(min(mp.cpu_count(), len(my_files)))
+        big_buffer = (pool.starmap(gzworker, zip(my_files, repeat(condition),
+                                                 repeat(key), repeat(strip)),
+                                   chunksize=1))
+        pool.close()
+        saveInfo(big_buffer, 'Dump/' + os.path.basename(path) + "." + output_type,
+                    key_out, output_type)
 
 ##############################################################################
 ###################### Worker Function #######################################
 ##############################################################################
 
-def gzworker(fullpath, condition, key="text", strip="True"):
+def gzworker(fullpath, condition, key="text", strip="True", condition2=None):
     """Worker opens one .gz file"""
     # print('Opening {}'.format(fullpath))
     buffer = []
+    if condition2:
+        buffer2 = []
     with gzip.open(fullpath, 'rb') as infile:
         decoded = io.TextIOWrapper(infile, encoding='utf8')
         for _line in decoded:
@@ -65,11 +79,17 @@ def gzworker(fullpath, condition, key="text", strip="True"):
                 json_data = _line.split('|', 1)[1][:-1]
                 result = tweet_filter(json.loads(json_data), condition,
                                       key, strip)
+                if condition2:
+                    result2 = tweet_filter(json.loads(json_data), condition,
+                                          key, strip)
                 if result:
                     buffer.append(result)
+                if result2:
+                    buffer2.append(result2)
     # print('Closing {}'.format(fullpath))
+    if condition2:
+        return (buffer, buffer2)
     return buffer
-
 ##############################################################################
 ###################### Filter Function #######################################
 ##############################################################################
@@ -139,6 +159,40 @@ def saveInfo(big_buffer, path="Dump/save.txt",  key_out=None,
         with open(path, 'w') as _file:
             for i in big_buffer:
                 for j in i:
+                    json.dump(j[key_out], _file)
+                    _file.write('\n')
+
+def saveInfo1(big_buffer, path="Dump/save.txt",  key_out=None,
+             output_type="csv"):
+    """Will save the selected output key in the selected path in the selected
+    type output"""
+    if key_out==None:
+        with open(path, 'w') as _file:
+            for i in big_buffer:
+                for j in i[0]:
+                    json.dump(j, _file)
+                    _file.write('\n')
+    else:
+        with open(path, 'w') as _file:
+            for i in big_buffer:
+                for j in i[0]:
+                    json.dump(j[key_out], _file)
+                    _file.write('\n')
+
+def saveInfo2(big_buffer, path="Dump/save.txt",  key_out=None,
+             output_type="csv"):
+    """Will save the selected output key in the selected path in the selected
+    type output"""
+    if key_out==None:
+        with open(path, 'w') as _file:
+            for i in big_buffer:
+                for j in i[1]:
+                    json.dump(j, _file)
+                    _file.write('\n')
+    else:
+        with open(path, 'w') as _file:
+            for i in big_buffer:
+                for j in i[1]:
                     json.dump(j[key_out], _file)
                     _file.write('\n')
 
