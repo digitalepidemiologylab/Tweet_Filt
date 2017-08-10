@@ -4,10 +4,12 @@ This module will allow you to filter tweets in JSON format, based on a condition
 ## Getting Started
 
 To start working with this module you simply need to clone this project and add the data you want to filter in the Data folder. Right now the code only works with .gz files but other files could be easily implemented.
-We added two simple templates to show what the different attributes of the run_all does, you can tinker with them to get a better grasp of the function.
+We added one simple template and a simple config.ini file to show what the different attributes of the run_all does, you can tinker with them to get a better grasp of the function.
 The different attributes are rather self explanatory:
 * path: will be the location where the Data is stored
 * condition: will be the condition on which the filter will be based (see below for the nomenclature of this string)
+
+Moved to the .ini file:
 * key: initialized for "text", changing this will allow for the filter to look at other information in the tweet object (e.g. "user", "coordinates"...)
 * strip: initialized for True, this will allow the filter to remove the usernames, urls and hashtags from the analyzed field. By setting this attribute to false the analyzed fields will be left as is.
 
@@ -20,6 +22,8 @@ Will be a string that will be used by the filter to find the specific tweets. Wi
 * $$: case sensitive
 * AND: and
 * OR: or
+
+!It is important to note that you will need to put everything into brackets otherwise the filter will not work!
 
 Example text: My horse is not a dog!
 * condition: ((cat OR dog) AND $horse$) will be ((False or True) and True) --> True
