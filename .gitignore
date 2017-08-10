@@ -105,3 +105,4 @@ ENV/
 /Dump/*
 Analysis.ipynb
 toCSV.py
+*.ini
