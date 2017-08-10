@@ -13,13 +13,20 @@ import pandas
 import multiprocessing as mp
 import glob
 import uuid
+import configparser
 
 ##############################################################################
 ################### Configurable Params ######################################
 ##############################################################################
-# TODO: Move this to a separate config file
-NUM_OF_PROCESSES = 43
-OUTPUT_DIRECTORY = "Dump/"
+#See config.ini
+Config = configparser.ConfigParser()
+Config.read("config.ini")
+
+NUM_OF_PROCESSES = int(Config['SectionOne']['NUM_OF_PROCESSES'])
+OUTPUT_DIRECTORY = Config['SectionOne']['OUTPUT_DIRECTORY']
+SEARCHED_KEY = Config['SectionTwo']['SEARCHED_KEY']
+STRIP = Config['SectionTwo'].getboolean('STRIP')
+
 
 def ensure_output_paths_exist(conditions):
     # ensure OUTPUT_DIRECTORY exists
@@ -42,8 +49,7 @@ def ensure_output_paths_exist(conditions):
 ############### Run through all folders ######################################
 ##############################################################################
 
-def run_all(path, conditions, key="text", strip=True, key_out=None,
-            output_type="txt"):
+def run_all(path, conditions):
     """This will allow to run all the directories from a path"""
 
     file_paths = glob.glob(path+"/*/*.gz")
@@ -54,7 +60,7 @@ def run_all(path, conditions, key="text", strip=True, key_out=None,
     # If NUM_OF_PROCESSES is False, use mp.cpu_count
     pool = mp.Pool(NUM_OF_PROCESSES or mp.cpu_count())
 
-    pool.starmap(gzworker, zip(file_paths, repeat(conditions), repeat(key), repeat(strip)), chunksize=1)
+    pool.starmap(gzworker, zip(file_paths, repeat(conditions), repeat(SEARCHED_KEY), repeat(STRIP)), chunksize=1)
 
     pool.close()
 
@@ -98,7 +104,7 @@ def gzworker(fullpath, conditions, key="text", strip="True"):
 ##############################################################################
 
 def tweet_filter(tweet_obj, condition, key="text", strip="True"):
-    """Will return the tweet object if the conditions are met (in the text only)"""
+    """Will return the tweet object if the conditions are met in the specific tweet_obj"""
 
     if key in tweet_obj:
         if strip:
@@ -140,56 +146,6 @@ def strip_all_entities(text):
             if word[0] not in entity_prefixes:
                 words.append(word)
     return ' '.join(words)
-
-##############################################################################
-############### Function to save whatever we want from the tweet #############
-##############################################################################
-
-def saveInfo(big_buffer, path="Dump/save.txt",  key_out=None,
-             output_type="csv"):
-    """Will save the selected output key in the selected path in the selected
-    type output"""
-    if output_type == "csv":
-        saveInfoCSV(big_buffer, path)
-        return None
-    if key_out==None:
-        with open(path, 'w') as _file:
-            for i in big_buffer:
-                for j in i:
-                    json.dump(j, _file)
-                    _file.write('\n')
-    else:
-        with open(path, 'w') as _file:
-            for i in big_buffer:
-                for j in i:
-                    json.dump(j[key_out], _file)
-                    _file.write('\n')
-
-def saveInfo1(big_buffer, path="Dump/save.txt",  key_out=None,
-             output_type="csv"):
-    """Will save the selected output key in the selected path in the selected
-    type output"""
-    if key_out==None:
-        with open(path, 'w') as _file:
-            for i in big_buffer:
-                for j in i[0]:
-                    json.dump(j, _file)
-                    _file.write('\n')
-    else:
-        with open(path, 'w') as _file:
-            for i in big_buffer:
-                for j in i[0]:
-                    json.dump(j[key_out], _file)
-                    _file.write('\n')
-
-##############################################################################
-############### Save the info in a .csv file #################################
-##############################################################################
-
-def saveInfoCSV(big_buffer, path="Dump/save.csv"):
-    """Will save the tweet object in the selected path in the csv format"""
-    for i in big_buffer:
-        json_normalize(i).to_csv(path)
 
 ##############################################################################
 ###################### Tokenizer #############################################
@@ -338,3 +294,40 @@ def evaluate_condition(text, tree):
     else:
         raise SyntaxError("Something went wrong bra")
         # raise an error
+
+##############################################################################
+############### No more need for these functions #############################
+##############################################################################
+
+# ##############################################################################
+# ############### Function to save whatever we want from the tweet #############
+# ##############################################################################
+#
+# def saveInfo(big_buffer, path="Dump/save.txt",  key_out=None,
+#              output_type="csv"):
+#     """Will save the selected output key in the selected path in the selected
+#     type output"""
+#     if output_type == "csv":
+#         saveInfoCSV(big_buffer, path)
+#         return None
+#     if key_out==None:
+#         with open(path, 'w') as _file:
+#             for i in big_buffer:
+#                 for j in i:
+#                     json.dump(j, _file)
+#                     _file.write('\n')
+#     else:
+#         with open(path, 'w') as _file:
+#             for i in big_buffer:
+#                 for j in i:
+#                     json.dump(j[key_out], _file)
+#                     _file.write('\n')
+#
+# ##############################################################################
+# ############### Save the info in a .csv file #################################
+# ##############################################################################
+#
+# def saveInfoCSV(big_buffer, path="Dump/save.csv"):
+#     """Will save the tweet object in the selected path in the csv format"""
+#     for i in big_buffer:
+#         json_normalize(i).to_csv(path)
