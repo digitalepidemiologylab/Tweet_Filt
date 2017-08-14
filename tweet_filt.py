@@ -76,17 +76,21 @@ def gzworker(fullpath, conditions, key="text", strip="True"):
     # Instantiate a list of empty buffers per condition
     buffers = [[] for x in conditions]
 
-    with gzip.open(fullpath, 'rb') as infile:
-        decoded = io.TextIOWrapper(infile, encoding='utf8')
-        for _line in decoded:
-            if _line.strip() != "":
-                json_data = _line.split('|', 1)[1][:-1]
+    try:
+        with gzip.open(fullpath, 'rb') as infile:
+            decoded = io.TextIOWrapper(infile, encoding='utf8')
+            for _line in decoded:
+                if _line.strip() != "":
+                    json_data = _line.split('|', 1)[1][:-1]
 
-                for _idx, _condition in enumerate(conditions):
-                    result = tweet_filter(json.loads(json_data), _condition, key, strip)
+                    for _idx, _condition in enumerate(conditions):
+                        result = tweet_filter(json.loads(json_data), _condition, key, strip)
 
-                    if result:
-                        buffers[_idx].append(result)
+                        if result:
+                            buffers[_idx].append(result)
+    except:
+        print("Error in {}".format(fullpath))
+        pass
 
     #Write to OUTPUT_DIRECTORY (if _buffer has contents)
     for _idx, _buffer in enumerate(buffers):
