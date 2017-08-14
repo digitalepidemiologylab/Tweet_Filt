@@ -54,7 +54,6 @@ def run_all(path, conditions):
 
     file_paths = glob.glob(path+"/*/*.gz")
     # Based on the current tweet storage mechanism (from Todd's code)
-
     ensure_output_paths_exist(conditions)
 
     # If NUM_OF_PROCESSES is False, use mp.cpu_count
@@ -93,7 +92,7 @@ def gzworker(fullpath, conditions, key="text", strip="True"):
     for _idx, _buffer in enumerate(buffers):
         if len(_buffer) > 0:
             OUTPUT_PATH = "%s/c_%s/%s.json" % (OUTPUT_DIRECTORY, str(_idx), str(uuid.uuid4()))
-            with open(OUTPUT_PATH, "w") as fp:
+            with open(OUTPUT_PATH, "w", errors='ignore') as fp:
                 fp.write(json.dumps(_buffer))
 
     print('Finished {}'.format(fullpath))

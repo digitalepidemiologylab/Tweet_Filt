@@ -1,8 +1,10 @@
 from tweet_filt import run_all
-# import time
 
-condition1 = "Banana AND (((Monkey OR Lemur) AND Pet))"
+condition1 = "(vaccine OR vaccinat) AND ((((((((((vaccine OR vaccinat) OR immunise) OR immunisation) OR jab) OR shot) OR shots) OR booster) OR boosters) AND (((((((((((((((((((((((((((((((((((((((((((((((((((((injection OR harm) OR danger) OR toxic) OR safe) OR safety) OR unsafe) OR unnecessary) OR ineffective) OR doubt) OR hesitant) OR hesitancy) OR concern) OR die) OR deaths) OR paralyse) OR paralysed) OR sick) OR infertile) OR fertility) OR injured) OR injuries) OR (side AND effects)) OR autism) OR autistic) OR link) OR proof) OR controversy) OR controversies) OR myth) OR hoax) OR scam) OR truth) OR lie) OR child) OR children) OR baby) OR babies) OR kid) OR kids) OR school) OR schools) OR consent) OR boycott) OR (drug AND companies)) OR (pharmaceutical AND companies)) OR (big AND pharma)) OR pfizer) OR (boko AND haram)) OR government) OR $WHO$) OR ((international AND health) AND agencies)) OR $NGO$) OR $NHS$)) OR ((((((((((meningitis) OR (yellow AND fever)) OR (herd AND immunity)) "
+condition1 = condition1 + "OR $MenAfriVac$) OR (anti AND vaxxers)) OR vaxxed) OR wakefield) OR overvaccinate) OR undervaccinate) OR unvaccinated))"
 
-condition2 = "(Vaccinat AND $WHO$) OR (Flu OR Sick)"
 
-run_all("Data/", [condition1, condition2])
+condition2 = "(((((meningitis OR menA) OR menB) OR menC) OR meng) OR meningitidis) AND ((((((((((vaccine OR vaccinat) OR immunise) OR immunisation) OR jab) OR shot) OR shots) OR booster) OR boosters) AND (((((((((((((((((((((((((((((((((((((((((((((((((((((injection OR harm) OR danger) OR toxic) OR safe) OR safety) OR unsafe) OR unnecessary) OR ineffective) OR doubt) OR hesitant) OR hesitancy) OR concern) OR die) OR deaths) OR paralyse) OR paralysed) OR sick) OR infertile) OR fertility) OR injured) OR injuries) OR (side AND effects)) OR autism) OR autistic) OR link) OR proof) OR controversy) OR controversies) OR myth) OR hoax) OR scam) OR truth) OR lie) OR child) OR children) OR baby) OR babies) OR kid) OR kids) OR school) OR schools) OR consent) OR boycott) OR (drug AND companies)) OR (pharmaceutical AND companies)) OR (big AND pharma)) OR pfizer) OR (boko AND haram)) OR government) OR $WHO$) OR ((international AND health) AND agencies)) OR $NGO$) OR $NHS$)) OR ((((((((((meningi"
+condition2 = condition2 + "tis) OR (yellow AND fever)) OR (herd AND immunity)) OR $MenAfriVac$) OR (anti AND vaxxers)) OR vaxxed) OR wakefield) OR overvaccinate) OR undervaccinate) OR unvaccinated))"
+
+run_all("temp/", [condition1, condition2])

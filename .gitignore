@@ -106,3 +106,4 @@ ENV/
 Analysis.ipynb
 toCSV.py
 *.ini
+/temp
